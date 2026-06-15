@@ -5,12 +5,12 @@ metadata:
   labels:
     app: web-app
 spec:
-  replicas: 3 # En az 3 pod olmalı ki biri güncellenirken diğerleri trafiği sırtlasın
+  replicas: 3
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1       # Güncelleme sırasında mevcut replica sayısının en fazla 1 üzerine çıkabilir (3+1=4)
-      maxUnavailable: 0 # Güncelleme sırasında ÇALIŞIR DURUMDAKİ podlardan HİÇBİRİ (0) kapatılamaz. Önce yenisi doğacak, sonra eskisi ölecek!
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: web-app
@@ -21,10 +21,10 @@ spec:
     spec:
       containers:
       - name: web-container
-        image: devarsyf/kusursuz-app:latest # Senin kullanıcı adınla imaj adı
+        image: devarsyf/kusursuz-app:latest
+        imagePullPolicy: IfNotPresent # 👈 KRİTİK AYAR: İnternetten indirme, lokalde varsa kullan!
         ports:
         - containerPort: 80
-        # Sağlık kontrolleri (K8s podun gerçekten açılıp açılmadığını buna bakarak anlar)
         readinessProbe:
           httpGet:
             path: /
@@ -43,4 +43,4 @@ spec:
   ports:
     - port: 80
       targetPort: 80
-      nodePort: 32000 # Dış dünyadan tarayıcı ile bu porttan erişeceğiz
+      nodePort: 32000
